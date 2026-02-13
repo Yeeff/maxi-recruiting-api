@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entidad principal que representa un candidato en el sistema de reclutamiento.
@@ -93,16 +95,20 @@ public class Candidato {
 
     // Relaciones OneToMany
     @OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<ExperienciaLaboral> experienciasLaborales = new java.util.ArrayList<>();
+    @Builder.Default
+    private List<ExperienciaLaboral> experienciasLaborales = new ArrayList<>();
 
     @OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<Educacion> educaciones = new java.util.ArrayList<>();
+    @Builder.Default
+    private List<Educacion> educaciones = new ArrayList<>();
 
     @OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<ReferenciaPersonal> referenciasPersonales = new java.util.ArrayList<>();
+    @Builder.Default
+    private List<ReferenciaPersonal> referenciasPersonales = new ArrayList<>();
 
     @OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<ContactoEmergencia> contactosEmergencia = new java.util.ArrayList<>();
+    @Builder.Default
+    private List<ContactoEmergencia> contactosEmergencia = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
