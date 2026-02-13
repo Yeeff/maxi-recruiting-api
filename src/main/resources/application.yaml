@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: recruiting-microservices
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: ${PORT:8097}
+
+
+
