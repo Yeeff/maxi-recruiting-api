@@ -26,7 +26,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	
 	// Apache PDFBox for PDF generation
-	implementation 'org.apache.pdfbox:pdfbox:3.0.1'
+	// implementation 'org.apache.pdfbox:pdfbox:3.0.1'
+	
+	// Flying Saucer for HTML to PDF (uses iText internally, Apache License)
+	implementation 'org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22'
+	
+	// Thymeleaf for template rendering
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	
 	compileOnly 'org.projectlombok:lombok'
 

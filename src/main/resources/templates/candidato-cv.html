@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Curriculum Vitae</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .header {
+            background-color: #1a4a7a;
+            color: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24pt;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            font-size: 12pt;
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1a4a7a;
+            border-bottom: 2px solid #1a4a7a;
+            padding-bottom: 5px;
+            margin-bottom: 12px;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 6px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            width: 180px;
+            flex-shrink: 0;
+        }
+        
+        .info-value {
+            flex-grow: 1;
+        }
+        
+        .experience-item, .education-item, .reference-item, .emergency-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #1a4a7a;
+        }
+        
+        .experience-item h3, .education-item h3 {
+            font-size: 12pt;
+            color: #1a4a7a;
+            margin-bottom: 5px;
+        }
+        
+        .experience-item .dates, .education-item .dates {
+            font-size: 10pt;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .experience-item .company, .education-item .institution {
+            font-weight: bold;
+            color: #444;
+        }
+        
+        .experience-item .description {
+            margin-top: 5px;
+            text-align: justify;
+        }
+        
+        .two-columns {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .two-columns .column {
+            flex: 1;
+        }
+        
+        .notes {
+            background-color: #fffde7;
+            padding: 15px;
+            border: 1px solid #ffd54f;
+            border-radius: 4px;
+        }
+        
+        .notes-title {
+            font-weight: bold;
+            color: #f57f17;
+            margin-bottom: 5px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 9pt;
+            color: #888;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border-radius: 3px;
+            font-size: 10pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 th:text="${candidato.nombre1 + ' ' + candidato.nombre2 + ' ' + candidato.apellido1 + ' ' + candidato.apellido2}">Nombre Completo</h1>
+        <div class="subtitle">CURRICULUM VITAE</div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">Informacion Personal</div>
+        <div class="info-row">
+            <span class="info-label">Documento de Identidad:</span>
+            <span class="info-value" th:text="${candidato.documentoIdentidad}">12345678</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Fecha de Nacimiento:</span>
+            <span class="info-value" th:text="${candidato.fechaNacimiento}">01/01/1990</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Edad:</span>
+            <span class="info-value"><span th:text="${candidato.edad}">30</span> anos</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Sexo:</span>
+            <span class="info-value" th:text="${candidato.sexo}">Masculino</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Estado Civil:</span>
+            <span class="info-value" th:text="${candidato.estadoCivil}">Soltero</span>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">Informacion de Contacto</div>
+        <div class="info-row">
+            <span class="info-label">Correo Electronico:</span>
+            <span class="info-value" th:text="${candidato.correoElectronico}">email@example.com</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Telefono:</span>
+            <span class="info-value" th:text="${candidato.telefono}">3001234567</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Celular:</span>
+            <span class="info-value" th:text="${candidato.celular}">3001234567</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Direccion:</span>
+            <span class="info-value" th:text="${candidato.direccion}">Calle 123</span>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">Informacion Profesional</div>
+        <div class="info-row">
+            <span class="info-label">Nivel de Estudio:</span>
+            <span class="info-value" th:text="${candidato.nivelEstudio}">Profesional</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Fuente de Reclutamiento:</span>
+            <span class="info-value" th:text="${candidato.fuenteReclutamiento}">LinkedIn</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Estado:</span>
+            <span class="info-value">
+                <span class="badge" th:text="${candidato.estadoCandidato}">ACTIVO</span>
+            </span>
+        </div>
+    </div>
+    
+    <div class="section" th:if="${not #lists.isEmpty(candidato.experienciasLaborales)}">
+        <div class="section-title">Experiencia Laboral</div>
+        <div class="experience-item" th:each="exp : ${candidato.experienciasLaborales}">
+            <h3 th:text="${exp.cargo}">Cargo</h3>
+            <div class="company" th:text="${exp.empresa}">Empresa</div>
+            <div class="dates">
+                <span th:text="${#temporals.format(exp.fechaIngreso, 'dd/MM/yyyy')}">01/01/2020</span>
+                - 
+                <span th:if="${exp.esActual}">Actual</span>
+                <span th:unless="${exp.esActual}" th:text="${#temporals.format(exp.fechaRetiro, 'dd/MM/yyyy')}">01/01/2023</span>
+            </div>
+            <div class="description" th:if="${exp.descripcionFunciones}" th:text="${exp.descripcionFunciones}">Descripcion de funciones</div>
+        </div>
+    </div>
+    
+    <div class="section" th:if="${not #lists.isEmpty(candidato.educaciones)}">
+        <div class="section-title">Educacion</div>
+        <div class="education-item" th:each="edu : ${candidato.educaciones}">
+            <h3 th:text="${edu.tituloObtenido}">Titulo</h3>
+            <div class="institution" th:text="${edu.institucion}">Institucion</div>
+            <div class="dates">
+                <span th:text="${edu.nivelEstudio}">Nivel</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section" th:if="${candidato.notas}">
+        <div class="section-title">Observaciones</div>
+        <div class="notes">
+            <div class="notes-title">Notas Adicionales</div>
+            <div th:text="${candidato.notas}">Notas sobre el candidato</div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Documento generado el <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}">17/02/2026</span>
+    </div>
+</body>
+</html>
