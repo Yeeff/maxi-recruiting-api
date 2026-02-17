@@ -23,8 +23,8 @@ public class ResponseWrapperAdvice implements ResponseBodyAdvice<Object> {
             Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
             ServerHttpResponse response) {
         
-        // Don't wrap strings or primitive types
-        if (body instanceof String || body instanceof Number || body instanceof Boolean) {
+        // Don't wrap strings or primitive types or byte arrays
+        if (body instanceof String || body instanceof Number || body instanceof Boolean || body instanceof byte[]) {
             return body;
         }
         
