@@ -23,14 +23,14 @@ public class ResponseWrapperAdvice implements ResponseBodyAdvice<Object> {
             Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
             ServerHttpResponse response) {
         
-        // Don't wrap null responses
-        if (body == null) {
-            return null;
-        }
-        
         // Don't wrap strings or primitive types
         if (body instanceof String || body instanceof Number || body instanceof Boolean) {
             return body;
+        }
+        
+        // Wrap null responses (like 204 No Content) with success response
+        if (body == null) {
+            return ApiResponse.success(null);
         }
         
         return ApiResponse.success(body);
