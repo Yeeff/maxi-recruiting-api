@@ -14,9 +14,9 @@ public class DataSourceConfig {
     @Primary
     public DataSource dataSource() {
         String instance = System.getenv("DB_INSTANCE");
-        String dbName = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "scheduler_db";
+        String dbName = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "maxi_recruinting";
         String dbUser = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
-        String dbPassword = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "password";
+        String dbPassword = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "";
 
         if (instance != null && !instance.isEmpty()) {
             // Cloud SQL
