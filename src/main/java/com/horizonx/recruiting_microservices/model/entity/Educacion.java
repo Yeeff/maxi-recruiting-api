@@ -56,6 +56,7 @@ public class Educacion {
     private LocalDateTime updatedAt;
 
     public enum EstadoEducacion {
+        COMPLETADO,
         CULMINADO,
         EN_CURSO,
         ABANDONADO,
