@@ -38,11 +38,17 @@ public class CandidatoResponse {
     private String direccion;
 
     // Información de catálogos
+    private Long sexoId;
     private String sexo;
+    private Long estadoCivilId;
     private String estadoCivil;
+    private Long nivelEstudioId;
     private String nivelEstudio;
+    private Long ciudadId;
     private String ciudad;
+    private Long departamentoId;
     private String departamento;
+    private Long barrioId;
     private String barrio;
 
     private String fuenteReclutamiento;
@@ -82,21 +88,27 @@ public class CandidatoResponse {
 
         // Información de catálogos
         if (candidato.getSexo() != null) {
+            builder.sexoId(candidato.getSexo().getId());
             builder.sexo(candidato.getSexo().getNombre());
         }
         if (candidato.getEstadoCivil() != null) {
+            builder.estadoCivilId(candidato.getEstadoCivil().getId());
             builder.estadoCivil(candidato.getEstadoCivil().getNombre());
         }
         if (candidato.getNivelEstudio() != null) {
+            builder.nivelEstudioId(candidato.getNivelEstudio().getId());
             builder.nivelEstudio(candidato.getNivelEstudio().getNombre());
         }
         if (candidato.getCiudad() != null) {
+            builder.ciudadId(candidato.getCiudad().getId());
             builder.ciudad(candidato.getCiudad().getNombre());
             if (candidato.getCiudad().getDepartamento() != null) {
+                builder.departamentoId(candidato.getCiudad().getDepartamento().getId());
                 builder.departamento(candidato.getCiudad().getDepartamento().getNombre());
             }
         }
         if (candidato.getBarrio() != null) {
+            builder.barrioId(candidato.getBarrio().getId());
             builder.barrio(candidato.getBarrio().getNombre());
         }
 
