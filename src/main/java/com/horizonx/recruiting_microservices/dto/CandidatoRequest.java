@@ -1,5 +1,6 @@
 package com.horizonx.recruiting_microservices.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.horizonx.recruiting_microservices.model.entity.Educacion;
 import com.horizonx.recruiting_microservices.model.entity.ExperienciaLaboral;
 import com.horizonx.recruiting_microservices.model.entity.ContactoEmergencia;
@@ -40,6 +41,7 @@ public class CandidatoRequest {
 
     private String apellido2;
 
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate fechaNacimiento;
 
     @Email(message = "El correo electrónico debe ser válido")
@@ -88,7 +90,9 @@ public class CandidatoRequest {
         private String descripcionFunciones;
         private String nombreJefeInmediato;
         private String telefonoEmpresa;
+        @JsonFormat(pattern = "yyyy/MM/dd")
         private LocalDate fechaIngreso;
+        @JsonFormat(pattern = "yyyy/MM/dd")
         private LocalDate fechaRetiro;
         private Boolean esActual;
         private String motivoRetiro;
@@ -102,7 +106,9 @@ public class CandidatoRequest {
         private Long nivelEstudioId;
         private String institucion;
         private String tituloObtenido;
+        @JsonFormat(pattern = "yyyy/MM/dd")
         private LocalDate fechaInicio;
+        @JsonFormat(pattern = "yyyy/MM/dd")
         private LocalDate fechaFin;
         private Educacion.EstadoEducacion estado;
         private String notas;
