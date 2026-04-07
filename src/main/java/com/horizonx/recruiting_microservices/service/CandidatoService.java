@@ -127,16 +127,33 @@ public class CandidatoService {
     }
 
     /**
-     * Busca candidatos con filtros por documento y/o estado.
+     * Busca candidatos con filtros por documento, estado y/o fecha de registro.
      */
     @Transactional(readOnly = true)
-    public List<CandidatoResponse> buscarCandidatos(String documentoIdentidad, String estado) {
-        log.info("Buscando candidatos con filtros - documento: {}, estado: {}", documentoIdentidad, estado);
+    public List<CandidatoResponse> buscarCandidatos(String documentoIdentidad, String estado, String fechaDesde, String fechaHasta) {
+        log.info("Buscando candidatos con filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}", 
+            documentoIdentidad, estado, fechaDesde, fechaHasta);
 
         List<Candidato> candidatos;
 
         if ((documentoIdentidad != null && !documentoIdentidad.isBlank()) || 
-            (estado != null && !estado.isBlank())) {
+            (estado != null && !estado.isBlank()) ||
+            (fechaDesde != null && !fechaDesde.isBlank()) ||
+            (fechaHasta != null && !fechaHasta.isBlank())) {
+            
+            java.time.LocalDate desde = null;
+            java.time.LocalDate hasta = null;
+            
+            if (fechaDesde != null && !fechaDesde.isBlank()) {
+                desde = java.time.LocalDate.parse(fechaDesde);
+            }
+            if (fechaHasta != null && !fechaHasta.isBlank()) {
+                hasta = java.time.LocalDate.parse(fechaHasta);
+            }
+            
+            final java.time.LocalDate desdeFinal = desde;
+            final java.time.LocalDate hastaFinal = hasta;
+            
             candidatos = candidatoRepository.findAll().stream()
                 .filter(c -> {
                     boolean matchesDocumento = documentoIdentidad == null || 
@@ -149,7 +166,15 @@ public class CandidatoService {
                         c.getEstadoCandidato() != null && 
                         c.getEstadoCandidato().name().equalsIgnoreCase(estado);
                     
-                    return matchesDocumento && matchesEstado;
+                    boolean matchesFechaDesde = desdeFinal == null || 
+                        c.getFechaRegistro() == null ||
+                        !c.getFechaRegistro().toLocalDate().isBefore(desdeFinal);
+                    
+                    boolean matchesFechaHasta = hastaFinal == null || 
+                        c.getFechaRegistro() == null ||
+                        !c.getFechaRegistro().toLocalDate().isAfter(hastaFinal);
+                    
+                    return matchesDocumento && matchesEstado && matchesFechaDesde && matchesFechaHasta;
                 })
                 .collect(Collectors.toList());
         } else {
