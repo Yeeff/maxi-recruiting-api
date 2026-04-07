@@ -142,6 +142,23 @@ public class CandidatoService {
     }
 
     /**
+     * Actualiza el estado de un candidato.
+     */
+    @Transactional
+    public CandidatoResponse actualizarEstado(Long id, Candidato.EstadoCandidato nuevoEstado) {
+        log.info("Actualizando estado del candidato con ID: {} a {}", id, nuevoEstado);
+
+        Candidato candidato = candidatoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Candidato no encontrado con ID: " + id));
+
+        candidato.setEstadoCandidato(nuevoEstado);
+        Candidato updated = candidatoRepository.save(candidato);
+        log.info("Estado del candidato actualizado a: {}", nuevoEstado);
+
+        return CandidatoResponse.fromEntity(updated);
+    }
+
+    /**
      * Construye la entidad Candidato desde el request.
      */
     private Candidato construirCandidato(CandidatoRequest request) {

@@ -2,6 +2,8 @@ package com.horizonx.recruiting_microservices.controller;
 
 import com.horizonx.recruiting_microservices.dto.CandidatoRequest;
 import com.horizonx.recruiting_microservices.dto.CandidatoResponse;
+import com.horizonx.recruiting_microservices.dto.EstadoUpdateRequest;
+import com.horizonx.recruiting_microservices.model.entity.Candidato;
 import com.horizonx.recruiting_microservices.service.CandidatoPdfService;
 import com.horizonx.recruiting_microservices.service.CandidatoService;
 import jakarta.validation.Valid;
@@ -106,6 +108,16 @@ public class CandidatoController {
         log.info("Recibida peticion para eliminar candidato con ID: {}", id);
         candidatoService.eliminarPorId(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<CandidatoResponse> actualizarEstado(
+            @PathVariable Long id,
+            @RequestBody EstadoUpdateRequest request) {
+        log.info("Recibida peticion para actualizar estado del candidato con ID: {}", id);
+        Candidato.EstadoCandidato estado = Candidato.EstadoCandidato.valueOf(request.getEstado());
+        CandidatoResponse response = candidatoService.actualizarEstado(id, estado);
+        return ResponseEntity.ok(response);
     }
 
     /**
