@@ -127,6 +127,8 @@ public class Candidato {
         ENTREVISTA,
         CONTRATADO,
         RECHAZADO,
-        DESCARTADO
+        DESCARTADO,
+        BACKUP_HOMBRE,
+        BACKUP_MUJER
     }
 }

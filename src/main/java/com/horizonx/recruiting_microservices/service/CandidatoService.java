@@ -162,6 +162,27 @@ public class CandidatoService {
      * Construye la entidad Candidato desde el request.
      */
     private Candidato construirCandidato(CandidatoRequest request) {
+        Candidato.EstadoCandidato estadoInicial = Candidato.EstadoCandidato.POSTULADO;
+        
+        if (request.getSexoId() != null) {
+            Sexo sexo = sexoRepository.findById(request.getSexoId()).orElse(null);
+            if (sexo != null) {
+                Long idSexo = sexo.getId();
+                if (idSexo == 1L) {
+                    estadoInicial = Candidato.EstadoCandidato.BACKUP_HOMBRE;
+                } else if (idSexo == 2L) {
+                    estadoInicial = Candidato.EstadoCandidato.BACKUP_MUJER;
+                } else if (sexo.getNombre() != null) {
+                    String nombreSexo = sexo.getNombre().toLowerCase();
+                    if (nombreSexo.contains("hombre") || nombreSexo.equals("m")) {
+                        estadoInicial = Candidato.EstadoCandidato.BACKUP_HOMBRE;
+                    } else if (nombreSexo.contains("mujer") || nombreSexo.equals("f")) {
+                        estadoInicial = Candidato.EstadoCandidato.BACKUP_MUJER;
+                    }
+                }
+            }
+        }
+        
         Candidato candidato = Candidato.builder()
                 .documentoIdentidad(request.getDocumentoIdentidad())
                 .nombre1(request.getNombre1())
@@ -176,7 +197,7 @@ public class CandidatoService {
                 .direccion(request.getDireccion())
                 .fuenteReclutamiento(request.getFuenteReclutamiento())
                 .notas(request.getNotas())
-                .estadoCandidato(Candidato.EstadoCandidato.POSTULADO)
+                .estadoCandidato(estadoInicial)
                 .build();
 
         // Asignar relaciones de catálogos
