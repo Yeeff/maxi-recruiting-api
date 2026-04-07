@@ -122,12 +122,8 @@ public class Candidato {
     }
 
     public enum EstadoCandidato {
-        POSTULADO,
-        EN_PROCESO,
-        ENTREVISTA,
-        CONTRATADO,
-        RECHAZADO,
         DESCARTADO,
+        INGRESADO,
         BACKUP_HOMBRE,
         BACKUP_MUJER
     }

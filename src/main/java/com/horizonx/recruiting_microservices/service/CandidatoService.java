@@ -162,7 +162,7 @@ public class CandidatoService {
      * Construye la entidad Candidato desde el request.
      */
     private Candidato construirCandidato(CandidatoRequest request) {
-        Candidato.EstadoCandidato estadoInicial = Candidato.EstadoCandidato.POSTULADO;
+        Candidato.EstadoCandidato estadoInicial = Candidato.EstadoCandidato.INGRESADO;
         
         if (request.getSexoId() != null) {
             Sexo sexo = sexoRepository.findById(request.getSexoId()).orElse(null);
