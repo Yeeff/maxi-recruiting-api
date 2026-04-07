@@ -92,9 +92,11 @@ public class CandidatoController {
      * GET /api/candidatos
      */
     @GetMapping
-    public ResponseEntity<List<CandidatoResponse>> obtenerTodos() {
-        log.info("Recibida peticion para obtener todos los candidatos");
-        List<CandidatoResponse> response = candidatoService.obtenerTodos();
+    public ResponseEntity<List<CandidatoResponse>> obtenerTodos(
+            @RequestParam(required = false) String documentoIdentidad,
+            @RequestParam(required = false) String estado) {
+        log.info("Recibida peticion para obtener candidatos. Filtros - documento: {}, estado: {}", documentoIdentidad, estado);
+        List<CandidatoResponse> response = candidatoService.buscarCandidatos(documentoIdentidad, estado);
         return ResponseEntity.ok(response);
     }
 

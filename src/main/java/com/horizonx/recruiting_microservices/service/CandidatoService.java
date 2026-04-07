@@ -127,6 +127,41 @@ public class CandidatoService {
     }
 
     /**
+     * Busca candidatos con filtros por documento y/o estado.
+     */
+    @Transactional(readOnly = true)
+    public List<CandidatoResponse> buscarCandidatos(String documentoIdentidad, String estado) {
+        log.info("Buscando candidatos con filtros - documento: {}, estado: {}", documentoIdentidad, estado);
+
+        List<Candidato> candidatos;
+
+        if ((documentoIdentidad != null && !documentoIdentidad.isBlank()) || 
+            (estado != null && !estado.isBlank())) {
+            candidatos = candidatoRepository.findAll().stream()
+                .filter(c -> {
+                    boolean matchesDocumento = documentoIdentidad == null || 
+                        documentoIdentidad.isBlank() || 
+                        c.getDocumentoIdentidad() != null && 
+                        c.getDocumentoIdentidad().toLowerCase().contains(documentoIdentidad.toLowerCase());
+                    
+                    boolean matchesEstado = estado == null || 
+                        estado.isBlank() || 
+                        c.getEstadoCandidato() != null && 
+                        c.getEstadoCandidato().name().equalsIgnoreCase(estado);
+                    
+                    return matchesDocumento && matchesEstado;
+                })
+                .collect(Collectors.toList());
+        } else {
+            candidatos = candidatoRepository.findAll();
+        }
+
+        return candidatos.stream()
+                .map(CandidatoResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Elimina un candidato por ID.
      */
     @Transactional
