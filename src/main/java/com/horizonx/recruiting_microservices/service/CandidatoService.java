@@ -132,16 +132,17 @@ public class CandidatoService {
      * Busca candidatos con filtros por documento, estado y/o fecha de registro con paginacion.
      */
     @Transactional(readOnly = true)
-    public PageResponse<CandidatoResponse> buscarCandidatos(String documentoIdentidad, String estado, String fechaDesde, String fechaHasta, int page, int size) {
-        log.info("Buscando candidatos con filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}, page: {}, size: {}", 
-            documentoIdentidad, estado, fechaDesde, fechaHasta, page, size);
+    public PageResponse<CandidatoResponse> buscarCandidatos(String documentoIdentidad, String estado, String fechaDesde, String fechaHasta, Long cargoId, int page, int size) {
+        log.info("Buscando candidatos con filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}, cargoId: {}, page: {}, size: {}", 
+            documentoIdentidad, estado, fechaDesde, fechaHasta, cargoId, page, size);
 
         List<Candidato> todosCandidatos;
 
         if ((documentoIdentidad != null && !documentoIdentidad.isBlank()) || 
             (estado != null && !estado.isBlank()) ||
             (fechaDesde != null && !fechaDesde.isBlank()) ||
-            (fechaHasta != null && !fechaHasta.isBlank())) {
+            (fechaHasta != null && !fechaHasta.isBlank()) ||
+            (cargoId != null)) {
             
             java.time.LocalDate desde = null;
             java.time.LocalDate hasta = null;
@@ -176,7 +177,11 @@ public class CandidatoService {
                         c.getFechaRegistro() == null ||
                         !c.getFechaRegistro().toLocalDate().isAfter(hastaFinal);
                     
-                    return matchesDocumento && matchesEstado && matchesFechaDesde && matchesFechaHasta;
+                    boolean matchesCargo = cargoId == null || 
+                        c.getCargo() != null && 
+                        c.getCargo().getId().equals(cargoId);
+                    
+                    return matchesDocumento && matchesEstado && matchesFechaDesde && matchesFechaHasta && matchesCargo;
                 })
                 .collect(Collectors.toList());
         } else {

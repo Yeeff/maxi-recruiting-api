@@ -98,11 +98,12 @@ public class CandidatoController {
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) String fechaDesde,
             @RequestParam(required = false) String fechaHasta,
+            @RequestParam(required = false) Long cargoId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info("Recibida peticion para obtener candidatos. Filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}, page: {}, size: {}", 
-            documentoIdentidad, estado, fechaDesde, fechaHasta, page, size);
-        PageResponse<CandidatoResponse> response = candidatoService.buscarCandidatos(documentoIdentidad, estado, fechaDesde, fechaHasta, page, size);
+        log.info("Recibida peticion para obtener candidatos. Filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}, cargoId: {}, page: {}, size: {}", 
+            documentoIdentidad, estado, fechaDesde, fechaHasta, cargoId, page, size);
+        PageResponse<CandidatoResponse> response = candidatoService.buscarCandidatos(documentoIdentidad, estado, fechaDesde, fechaHasta, cargoId, page, size);
         return ResponseEntity.ok(response);
     }
 
