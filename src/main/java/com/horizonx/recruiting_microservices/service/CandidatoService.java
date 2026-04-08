@@ -2,6 +2,7 @@ package com.horizonx.recruiting_microservices.service;
 
 import com.horizonx.recruiting_microservices.dto.CandidatoRequest;
 import com.horizonx.recruiting_microservices.dto.CandidatoResponse;
+import com.horizonx.recruiting_microservices.dto.PageResponse;
 import com.horizonx.recruiting_microservices.exception.ResourceNotFoundException;
 import com.horizonx.recruiting_microservices.model.entity.*;
 import com.horizonx.recruiting_microservices.model.repository.*;
@@ -127,14 +128,14 @@ public class CandidatoService {
     }
 
     /**
-     * Busca candidatos con filtros por documento, estado y/o fecha de registro.
+     * Busca candidatos con filtros por documento, estado y/o fecha de registro con paginacion.
      */
     @Transactional(readOnly = true)
-    public List<CandidatoResponse> buscarCandidatos(String documentoIdentidad, String estado, String fechaDesde, String fechaHasta) {
-        log.info("Buscando candidatos con filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}", 
-            documentoIdentidad, estado, fechaDesde, fechaHasta);
+    public PageResponse<CandidatoResponse> buscarCandidatos(String documentoIdentidad, String estado, String fechaDesde, String fechaHasta, int page, int size) {
+        log.info("Buscando candidatos con filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}, page: {}, size: {}", 
+            documentoIdentidad, estado, fechaDesde, fechaHasta, page, size);
 
-        List<Candidato> candidatos;
+        List<Candidato> todosCandidatos;
 
         if ((documentoIdentidad != null && !documentoIdentidad.isBlank()) || 
             (estado != null && !estado.isBlank()) ||
@@ -154,7 +155,7 @@ public class CandidatoService {
             final java.time.LocalDate desdeFinal = desde;
             final java.time.LocalDate hastaFinal = hasta;
             
-            candidatos = candidatoRepository.findAll().stream()
+            todosCandidatos = candidatoRepository.findAll().stream()
                 .filter(c -> {
                     boolean matchesDocumento = documentoIdentidad == null || 
                         documentoIdentidad.isBlank() || 
@@ -178,12 +179,25 @@ public class CandidatoService {
                 })
                 .collect(Collectors.toList());
         } else {
-            candidatos = candidatoRepository.findAll();
+            todosCandidatos = candidatoRepository.findAll();
         }
 
-        return candidatos.stream()
-                .map(CandidatoResponse::fromEntity)
-                .collect(Collectors.toList());
+        long totalRecords = todosCandidatos.size();
+        int totalPages = (int) Math.ceil((double) totalRecords / size);
+        
+        List<CandidatoResponse> paginatedData = todosCandidatos.stream()
+            .skip((long) page * size)
+            .limit(size)
+            .map(CandidatoResponse::fromEntity)
+            .collect(Collectors.toList());
+
+        return PageResponse.<CandidatoResponse>builder()
+            .data(paginatedData)
+            .currentPage(page)
+            .pageSize(size)
+            .totalRecords(totalRecords)
+            .totalPages(totalPages)
+            .build();
     }
 
     /**

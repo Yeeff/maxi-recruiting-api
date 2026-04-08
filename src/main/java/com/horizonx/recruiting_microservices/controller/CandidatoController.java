@@ -3,6 +3,7 @@ package com.horizonx.recruiting_microservices.controller;
 import com.horizonx.recruiting_microservices.dto.CandidatoRequest;
 import com.horizonx.recruiting_microservices.dto.CandidatoResponse;
 import com.horizonx.recruiting_microservices.dto.EstadoUpdateRequest;
+import com.horizonx.recruiting_microservices.dto.PageResponse;
 import com.horizonx.recruiting_microservices.model.entity.Candidato;
 import com.horizonx.recruiting_microservices.service.CandidatoPdfService;
 import com.horizonx.recruiting_microservices.service.CandidatoService;
@@ -92,14 +93,16 @@ public class CandidatoController {
      * GET /api/candidatos
      */
     @GetMapping
-    public ResponseEntity<List<CandidatoResponse>> obtenerTodos(
+    public ResponseEntity<PageResponse<CandidatoResponse>> obtenerTodos(
             @RequestParam(required = false) String documentoIdentidad,
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) String fechaDesde,
-            @RequestParam(required = false) String fechaHasta) {
-        log.info("Recibida peticion para obtener candidatos. Filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}", 
-            documentoIdentidad, estado, fechaDesde, fechaHasta);
-        List<CandidatoResponse> response = candidatoService.buscarCandidatos(documentoIdentidad, estado, fechaDesde, fechaHasta);
+            @RequestParam(required = false) String fechaHasta,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.info("Recibida peticion para obtener candidatos. Filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}, page: {}, size: {}", 
+            documentoIdentidad, estado, fechaDesde, fechaHasta, page, size);
+        PageResponse<CandidatoResponse> response = candidatoService.buscarCandidatos(documentoIdentidad, estado, fechaDesde, fechaHasta, page, size);
         return ResponseEntity.ok(response);
     }
 
