@@ -1,11 +1,11 @@
 package com.horizonx.recruiting_microservices.controller;
 
+import com.horizonx.recruiting_microservices.dto.CargoRequest;
 import com.horizonx.recruiting_microservices.dto.CargoResponse;
 import com.horizonx.recruiting_microservices.service.CargoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,5 +32,19 @@ public class CargoController {
     @GetMapping
     public ResponseEntity<List<CargoResponse>> findAll() {
         return ResponseEntity.ok(cargoService.findAll());
+    }
+
+    /**
+     * Crea un nuevo cargo en el catálogo.
+     *
+     * POST /api/cargos
+     *
+     * @param request datos del cargo a crear
+     * @return CargoResponse del cargo creado
+     */
+    @PostMapping
+    public ResponseEntity<CargoResponse> create(@Valid @RequestBody CargoRequest request) {
+        CargoResponse response = cargoService.create(request);
+        return ResponseEntity.ok(response);
     }
 }

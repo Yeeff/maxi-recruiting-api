@@ -1,5 +1,6 @@
 package com.horizonx.recruiting_microservices.service;
 
+import com.horizonx.recruiting_microservices.dto.CargoRequest;
 import com.horizonx.recruiting_microservices.dto.CargoResponse;
 import com.horizonx.recruiting_microservices.model.entity.Cargo;
 import com.horizonx.recruiting_microservices.model.repository.CargoRepository;
@@ -29,6 +30,22 @@ public class CargoService {
         return cargoRepository.findByOrderByNombreAsc().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Crea un nuevo cargo en el catálogo.
+     *
+     * @param request datos del cargo a crear
+     * @return CargoResponse del cargo creado
+     */
+    public CargoResponse create(CargoRequest request) {
+        Cargo cargo = Cargo.builder()
+                .nombre(request.getNombre())
+                .descripcion(request.getDescripcion())
+                .build();
+        
+        Cargo saved = cargoRepository.save(cargo);
+        return toResponse(saved);
     }
 
     /**
