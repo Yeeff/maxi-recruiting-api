@@ -346,6 +346,10 @@ public class CandidatoService {
             candidato.setBarrio(barrioRepository.findById(request.getBarrioId())
                     .orElseThrow(() -> new ResourceNotFoundException("Barrio no encontrado con ID: " + request.getBarrioId())));
         }
+        if (request.getCargoId() != null) {
+            candidato.setCargo(cargoRepository.findById(request.getCargoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Cargo no encontrado con ID: " + request.getCargoId())));
+        }
     }
 
     /**
