@@ -77,6 +77,10 @@ public class Candidato {
     @JoinColumn(name = "nivel_estudio_id")
     private NivelEstudio nivelEstudio;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cargo_id")
+    private Cargo cargo;
+
     @Column(name = "fuente_reclutamiento", length = 100)
     private String fuenteReclutamiento;
 

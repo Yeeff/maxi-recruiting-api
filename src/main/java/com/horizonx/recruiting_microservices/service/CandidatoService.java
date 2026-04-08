@@ -31,6 +31,7 @@ public class CandidatoService {
     private final NivelEstudioRepository nivelEstudioRepository;
     private final CiudadRepository ciudadRepository;
     private final BarrioRepository barrioRepository;
+    private final CargoRepository cargoRepository;
 
     /**
      * Crea un nuevo candidato con todas sus relaciones.
@@ -294,6 +295,10 @@ public class CandidatoService {
         if (request.getBarrioId() != null) {
             candidato.setBarrio(barrioRepository.findById(request.getBarrioId())
                     .orElseThrow(() -> new ResourceNotFoundException("Barrio no encontrado con ID: " + request.getBarrioId())));
+        }
+        if (request.getCargoId() != null) {
+            candidato.setCargo(cargoRepository.findById(request.getCargoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Cargo no encontrado con ID: " + request.getCargoId())));
         }
 
         // Agregar relaciones

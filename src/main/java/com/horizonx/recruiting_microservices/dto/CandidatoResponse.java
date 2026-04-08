@@ -44,6 +44,8 @@ public class CandidatoResponse {
     private String estadoCivil;
     private Long nivelEstudioId;
     private String nivelEstudio;
+    private Long cargoId;
+    private String cargo;
     private Long ciudadId;
     private String ciudad;
     private Long departamentoId;
@@ -98,6 +100,10 @@ public class CandidatoResponse {
         if (candidato.getNivelEstudio() != null) {
             builder.nivelEstudioId(candidato.getNivelEstudio().getId());
             builder.nivelEstudio(candidato.getNivelEstudio().getNombre());
+        }
+        if (candidato.getCargo() != null) {
+            builder.cargoId(candidato.getCargo().getId());
+            builder.cargo(candidato.getCargo().getNombre());
         }
         if (candidato.getCiudad() != null) {
             builder.ciudadId(candidato.getCiudad().getId());

@@ -62,6 +62,7 @@ public class CandidatoRequest {
 
     private Long estadoCivilId;
     private Long nivelEstudioId;
+    private Long cargoId;
 
     private String fuenteReclutamiento;
     private String notas;
