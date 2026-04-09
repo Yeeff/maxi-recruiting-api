@@ -1,8 +1,15 @@
 package com.horizonx.recruiting_microservices.service;
 
+
 import com.horizonx.recruiting_microservices.dto.CandidatoRequest;
 import com.horizonx.recruiting_microservices.dto.CandidatoResponse;
+import com.horizonx.recruiting_microservices.dto.EstadoUpdateRequest;
 import com.horizonx.recruiting_microservices.dto.PageResponse;
+import com.horizonx.recruiting_microservices.dto.export.CandidatoExportDto;
+
+import java.io.ByteArrayOutputStream;
+import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 import com.horizonx.recruiting_microservices.exception.ResourceNotFoundException;
 import com.horizonx.recruiting_microservices.model.entity.*;
 import com.horizonx.recruiting_microservices.model.repository.*;
@@ -203,6 +210,139 @@ public class CandidatoService {
             .pageSize(size)
             .totalRecords(totalRecords)
             .totalPages(totalPages)
+            .build();
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] exportarCandidatos(String documentoIdentidad, String estado, String fechaDesde, String fechaHasta, Long cargoId) {
+        log.info("Exportando candidatos con filtros - documento: {}, estado: {}, fechaDesde: {}, fechaHasta: {}, cargoId: {}", 
+            documentoIdentidad, estado, fechaDesde, fechaHasta, cargoId);
+
+        List<CandidatoExportDto> exportData = buscarCandidatosFiltrados(documentoIdentidad, estado, fechaDesde, fechaHasta, cargoId)
+            .stream()
+            .map(this::toExportDto)
+            .collect(Collectors.toList());
+            
+        log.info("✅ Generando archivo XLSX real con {} registros", exportData.size());
+
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook()) {
+            
+            org.apache.poi.xssf.usermodel.XSSFSheet sheet = workbook.createSheet("Candidatos");
+            
+            // Crear estilo para encabezados
+            org.apache.poi.xssf.usermodel.XSSFFont headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            org.apache.poi.xssf.usermodel.XSSFCellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(headerFont);
+            
+            // Encabezados
+            String[] headers = {
+                "Documento", "Primer Nombre", "Segundo Nombre", "Primer Apellido", 
+                "Segundo Apellido", "Correo Electrónico", "Teléfono", "Celular", 
+                "Cargo", "Estado", "Fecha Registro"
+            };
+            
+            org.apache.poi.xssf.usermodel.XSSFRow headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                org.apache.poi.xssf.usermodel.XSSFCell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+                sheet.setColumnWidth(i, 18 * 256);
+            }
+            
+            // Formato fecha
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            
+            // Datos
+            int rowNum = 1;
+            for (CandidatoExportDto dto : exportData) {
+                org.apache.poi.xssf.usermodel.XSSFRow row = sheet.createRow(rowNum++);
+                
+                row.createCell(0).setCellValue(dto.getDocumentoIdentidad() != null ? dto.getDocumentoIdentidad() : "");
+                row.createCell(1).setCellValue(dto.getNombre1() != null ? dto.getNombre1() : "");
+                row.createCell(2).setCellValue(dto.getNombre2() != null ? dto.getNombre2() : "");
+                row.createCell(3).setCellValue(dto.getApellido1() != null ? dto.getApellido1() : "");
+                row.createCell(4).setCellValue(dto.getApellido2() != null ? dto.getApellido2() : "");
+                row.createCell(5).setCellValue(dto.getCorreoElectronico() != null ? dto.getCorreoElectronico() : "");
+                row.createCell(6).setCellValue(dto.getTelefono() != null ? dto.getTelefono() : "");
+                row.createCell(7).setCellValue(dto.getCelular() != null ? dto.getCelular() : "");
+                row.createCell(8).setCellValue(dto.getCargo() != null ? dto.getCargo() : "");
+                row.createCell(9).setCellValue(dto.getEstado() != null ? dto.getEstado() : "");
+                row.createCell(10).setCellValue(dto.getFechaRegistro() != null ? dto.getFechaRegistro().format(formatter) : "");
+            }
+            
+            workbook.write(out);
+            out.flush();
+            
+            byte[] bytes = out.toByteArray();
+            log.info("✅ ✅ ✅ ARCHIVO XLSX GENERADO EXITOSAMENTE");
+            log.info("✅ Tamaño total: {} bytes", bytes.length);
+            log.info("✅ Primeros 4 bytes (deben ser 50 4B 03 04 = ZIP): {:02X} {:02X} {:02X} {:02X}", 
+                bytes[0] & 0xFF, bytes[1] & 0xFF, bytes[2] & 0xFF, bytes[3] & 0xFF);
+            
+            // ✅ GUARDAMOS UNA COPIA EXACTA EN ESCRITORIO
+            try {
+                java.io.File debugFile = new java.io.File(System.getProperty("user.home"), "Desktop/candidatos_debug.xlsx");
+                try (java.io.FileOutputStream fos = new java.io.FileOutputStream(debugFile)) {
+                    fos.write(bytes);
+                    fos.getFD().sync();
+                }
+                log.info("✅ ✅ ✅ ARCHIVO DEBUG GUARDADO EN: {}", debugFile.getAbsolutePath());
+                log.info("✅ PRUEBA ESTE ARCHIVO PRIMERO:");
+                log.info("✅ ✅ SI ESTE ABRE = PROBLEMA 100% EN FRONTEND / PROXY / NAVEGADOR");
+                log.info("✅ ❌ SI ESTE TAMBIEN FALLA = PROBLEMA EN BACKEND");
+            } catch (Exception ex) {
+                log.warn("No se pudo guardar archivo debug: {}", ex.getMessage());
+            }
+            
+            return bytes;
+        } catch (Exception e) {
+            log.error("❌ Error generando archivo Excel", e);
+            throw new RuntimeException("Error al generar el archivo Excel: " + e.getMessage(), e);
+        }
+    }
+
+    private List<Candidato> buscarCandidatosFiltrados(String documentoIdentidad, String estado, String fechaDesde, String fechaHasta, Long cargoId) {
+        java.time.LocalDate desde = fechaDesde != null && !fechaDesde.isBlank() ? java.time.LocalDate.parse(fechaDesde) : null;
+        java.time.LocalDate hasta = fechaHasta != null && !fechaHasta.isBlank() ? java.time.LocalDate.parse(fechaHasta) : null;
+        
+        return candidatoRepository.findAll().stream()
+            .filter(c -> {
+                boolean matchesDocumento = documentoIdentidad == null || documentoIdentidad.isBlank() || 
+                    c.getDocumentoIdentidad() != null && c.getDocumentoIdentidad().toLowerCase().contains(documentoIdentidad.toLowerCase());
+                
+                boolean matchesEstado = estado == null || estado.isBlank() || 
+                    c.getEstadoCandidato() != null && c.getEstadoCandidato().name().equalsIgnoreCase(estado);
+                
+                boolean matchesFechaDesde = desde == null || c.getFechaRegistro() == null ||
+                    !c.getFechaRegistro().toLocalDate().isBefore(desde);
+                
+                boolean matchesFechaHasta = hasta == null || c.getFechaRegistro() == null ||
+                    !c.getFechaRegistro().toLocalDate().isAfter(hasta);
+                
+                boolean matchesCargo = cargoId == null || 
+                    c.getCargo() != null && c.getCargo().getId().equals(cargoId);
+                
+                return matchesDocumento && matchesEstado && matchesFechaDesde && matchesFechaHasta && matchesCargo;
+            })
+            .collect(Collectors.toList());
+    }
+
+    private CandidatoExportDto toExportDto(Candidato candidato) {
+        return CandidatoExportDto.builder()
+            .id(candidato.getId())
+            .documentoIdentidad(candidato.getDocumentoIdentidad())
+            .nombre1(candidato.getNombre1())
+            .nombre2(candidato.getNombre2())
+            .apellido1(candidato.getApellido1())
+            .apellido2(candidato.getApellido2())
+            .correoElectronico(candidato.getCorreoElectronico())
+            .telefono(candidato.getTelefono())
+            .celular(candidato.getCelular())
+            .cargo(candidato.getCargo() != null ? candidato.getCargo().getNombre() : "-")
+            .estado(candidato.getEstadoCandidato() != null ? candidato.getEstadoCandidato().name() : "-")
+            .fechaRegistro(candidato.getFechaRegistro())
             .build();
     }
 

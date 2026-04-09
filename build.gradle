@@ -43,6 +43,9 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.17.1'
 
+	// Apache POI for Excel export (estandar oficial, 100% compatible)
+	implementation 'org.apache.poi:poi-ooxml:5.2.5'
+
 }
 
 tasks.named('test') {

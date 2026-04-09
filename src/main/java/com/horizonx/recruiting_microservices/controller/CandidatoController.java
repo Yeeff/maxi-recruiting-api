@@ -107,6 +107,32 @@ public class CandidatoController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportarCandidatos(
+            @RequestParam(required = false) String documentoIdentidad,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) String fechaDesde,
+            @RequestParam(required = false) String fechaHasta,
+            @RequestParam(required = false) Long cargoId) {
+        
+        log.info("Recibida peticion para exportar candidatos con los filtros actuales");
+        
+        byte[] excelBytes = candidatoService.exportarCandidatos(documentoIdentidad, estado, fechaDesde, fechaHasta, cargoId);
+        
+        String filename = String.format("candidatos_%s.xlsx", 
+            java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm")));
+        
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + filename)
+            .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
+            .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate, max-age=0")
+            .header(HttpHeaders.PRAGMA, "no-cache")
+            .header(HttpHeaders.EXPIRES, "0")
+            .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+            .contentLength(excelBytes.length)
+            .body(excelBytes);
+    }
+
     /**
      * Elimina un candidato por su ID.
      *
